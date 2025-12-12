@@ -10,6 +10,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { message } from 'antd';
 
 const AUTH_TOKEN_KEY = 'auth_token';
+if (import.meta.env.DEV){
+  sessionStorage.clear()
+}
 
 function App() {
   const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
