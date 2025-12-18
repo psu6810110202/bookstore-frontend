@@ -7,12 +7,14 @@ import EditBook from './components/EditBook';
 import AddBook from './components/AddBook';
 import NavBar from "./components/NavBar";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { message } from 'antd';
+import { message, Modal, Input } from 'antd';
 
 const AUTH_TOKEN_KEY = 'auth_token';
 if (import.meta.env.DEV){
   sessionStorage.clear()
 }
+
+const { Search } = Input;
 
 function App() {
   const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
@@ -52,6 +54,9 @@ function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [isSearchModalVisible, setIsSearchModalVisible] = useState(false);
+  const showSearchModal = () => setIsSearchModalVisible(true);
+  const handleSearchModalClose = () => setIsSearchModalVisible(false);
 
   const showAddBookModal = () => setIsAddBookModalVisible(true);
   const handleAddBookModalClose = () => setIsAddBookModalVisible(false);
@@ -155,37 +160,57 @@ function App() {
         onLogout={handleLogout} 
         showAddBookModal={showAddBookModal}
         onSearch={(value) => setSearchKeyword(value)}
+        onOpenSearch={showSearchModal}
       />
-        <Routes>
-            <Route 
-              path="/login" 
-              element={
-                <LoginScreen onLoginSuccess = {handleLoginSuccess} />} 
-            />
 
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <BookScreen onLogout={handleLogout} searchKeyword={searchKeyword} /> 
-                </ProtectedRoute>
-              } 
-            />
-            
-            <Route 
-              path="*" 
-              element={
-                <h2>404 Page Not Found</h2>
-              } 
-            /> 
-        </Routes>
+      <Modal
+        title="Search Books"
+        open={isSearchModalVisible}
+        onCancel={handleSearchModalClose}
+        footer={null} // ไม่เอาปุ่ม OK/Cancel ด้านล่าง
+        centered
+      >
+        <Search 
+          placeholder="พิมพ์ชื่อหนังสือที่ต้องการค้นหา..." 
+          allowClear
+          enterButton="Search"
+          size="large"
+          defaultValue={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)} // ค้นหาแบบ Real-time
+          onSearch={() => handleSearchModalClose()}
+        />
+      </Modal>
 
-          <AddBook
-            isVisible={isAddBookModalVisible}
-            onClose={handleAddBookModalClose}
-            onBookAdded={handleBookAdded}
-            isLoading={isSubmitting}
+      <Routes>
+          <Route 
+            path="/login" 
+            element={
+              <LoginScreen onLoginSuccess = {handleLoginSuccess} />} 
           />
+
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <BookScreen onLogout={handleLogout} searchKeyword={searchKeyword} /> 
+              </ProtectedRoute>
+            } 
+          />
+          
+          <Route 
+            path="*" 
+            element={
+              <h2>404 Page Not Found</h2>
+            } 
+          /> 
+      </Routes>
+
+      <AddBook
+        isVisible={isAddBookModalVisible}
+        onClose={handleAddBookModalClose}
+        onBookAdded={handleBookAdded}
+        isLoading={isSubmitting}
+      />
     </>
   );
 }
