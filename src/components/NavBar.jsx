@@ -1,18 +1,19 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'; 
-import { Button } from 'antd'; 
+import { Button, Dropdown } from 'antd'; 
+import { MenuOutlined } from '@ant-design/icons';
 
 function NavBar({ isAuthenticated, onLogout, showAddBookModal }) {
     const navigate = useNavigate();
     const location = useLocation(); 
 
     const handleLogoutClick = () => {
-        onLogout();
+        onLogout(); //
         navigate('/login'); 
     };
 
     const isLoginPage = location.pathname === '/login'; 
 
-    // ** 1. กำหนดสไตล์พื้นฐานสำหรับ Navigation Bar **
+    // ** 1. กำหนดสไตล์พื้นฐาน (คงเดิมตามที่คุณต้องการ) **
     const baseNavStyle = {
         padding: '20px', 
         backgroundColor: '#ffe6b3', 
@@ -21,87 +22,80 @@ function NavBar({ isAuthenticated, onLogout, showAddBookModal }) {
         width: '100%',
     };
 
-    // ** 2. สไตล์เมื่อล็อกอินแล้ว (Fixed Header) **
     const loggedInStyle = {
-        ...baseNavStyle, // ใช้สไตล์พื้นฐานทั้งหมด
-        justifyContent: 'space-between', // ชิดซ้ายและขวา
-        position: 'fixed', // ตรึงไว้ด้านบน
+        ...baseNavStyle, 
+        justifyContent: 'space-between', 
+        position: 'fixed', 
         top: '0',
         left: '0',
         zIndex: '100',
     };
 
-    // ** 3. สไตล์เมื่อยังไม่ล็อกอิน และอยู่หน้าอื่น (Not Fixed + Centered) **
     const notLoggedInStyle = {
-        ...baseNavStyle, // ใช้สไตล์พื้นฐานทั้งหมด
-        // ทำให้ปุ่ม Login อยู่ตรงกลางโดยใช้ justifyContent: 'center'
+        ...baseNavStyle, 
         justifyContent: 'center', 
-        position: 'static', // ไม่อยู่ในตำแหน่ง Fixed (เลื่อนตามปกติ)
+        position: 'static', 
         zIndex: 'initial',  
     };
 
-    // เลือกใช้สไตล์ตามสถานะ isAuthenticated
     const currentStyle = isAuthenticated ? loggedInStyle : notLoggedInStyle;
 
+    // --- ส่วนการตั้งค่ารายการในเมนู Dropdown ---
+    const items = [
+        {
+            key: '1',
+            label: 'New Book',
+            onClick: (e) => {
+                showAddBookModal(); //
+            },
+        },
+        {
+            key: '2',
+            label: 'Logout',
+            danger: true,
+            onClick: handleLogoutClick,
+        },
+    ];
 
-    // *** Logic การแสดงผล ***
-    let rightContent = null;
-    
-    if (isAuthenticated) {
-        // Logged In: แสดง New Book และ Logout
-        rightContent = (
-            <>
-                <Button 
-                    type="primary"
-                    htmlType='button' 
-                    style={{ marginRight: '10px' }} 
-                    onClick={showAddBookModal} 
-                >
-                    New Book
-                </Button>
-                <Button 
-                    type="primary" 
-                    danger 
-                    onClick={handleLogoutClick}
-                    style={{ marginRight: '50px' }} 
-                >
-                    Logout
-                </Button>
-            </>
-        );
-    } else if (!isLoginPage) {
-        // Not Logged In & Not on Login Page: แสดงปุ่ม Login
-        rightContent = (
-            <Link to="/login">
-                <Button type="primary">
-                    Login
-                </Button>
-            </Link>
-        );
-    }
+    // --- ส่วนประกอบเนื้อหา (Views) ---
 
-    return (
-        <nav 
-            style={currentStyle} // ใช้สไตล์ที่ถูกเลือก
-        >
-            {/* ส่วนซ้าย: Book List (จะแสดงเสมอ) */}
-            <div style={{ marginRight: isAuthenticated ? '0' : 'auto' }}> 
-                <Link to="/" 
-                    style={{ 
-                        color: '#332200', 
-                        textDecoration: 'none', 
-                        marginLeft: isAuthenticated ? '50px' : '0', // Margin เฉพาะตอนล็อกอินแล้ว
-                        fontSize: '25px',
-                    }}
-                >
+    // เมื่อ Login แล้ว: [ Book List ] ............ [ Hamburger Menu ]
+    const LoggedInView = (
+        <>
+            <div style={{ marginLeft: '50px' }}> 
+                <Link to="/" style={{ color: '#332200', textDecoration: 'none', fontSize: '25px', fontWeight: 'bold' }}>
                     Book List
                 </Link>
             </div>
-
-            {/* ส่วนขวา: New Book / Logout / Login */}
-            <div style={{ marginLeft: isAuthenticated ? '0' : 'auto' }}>
-                {rightContent}
+            <div style={{ marginRight: '50px' }}>
+                <Dropdown 
+                    menu={{ items }} 
+                    trigger={['click']} 
+                    placement="bottomRight"
+                >
+                    <Button 
+                        type="text"
+                        icon={<MenuOutlined style={{ fontSize: '24px', color: '#332200' }} />} 
+                    />
+                </Dropdown>
             </div>
+        </>
+    );
+
+    // เมื่อยังไม่ Login (หน้า Login): [ 📚 Book List 📚 ]
+    const LoggedOutView = (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+            <span style={{ fontSize: '28px' }}>📚</span>
+            <Link to="/" style={{ color: '#332200', textDecoration: 'none', fontSize: '25px', fontWeight: 'bold' }}>
+                Book List
+            </Link>
+            <span style={{ fontSize: '28px' }}>📚</span>
+        </div>
+    );
+
+    return (
+        <nav style={currentStyle}>
+            {isAuthenticated ? LoggedInView : LoggedOutView}
         </nav>
     );
 }
