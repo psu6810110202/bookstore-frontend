@@ -12,6 +12,8 @@ const URL_CATEGORY = "/api/book-category"
 
 function BookScreen(props) {
 
+  const { searchKeyword } = props;
+
   // State หลัก
   const [totalAmount, setTotalAmount] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -75,6 +77,11 @@ function BookScreen(props) {
     finally {setLoading(false);
     }
   }
+
+  // สร้างตัวแปรใหม่สำหรับข้อมูลที่กรองแล้ว
+  const filteredBooks = bookData.filter((book) =>
+    book.title.toLowerCase().includes(searchKeyword?.toLowerCase() || "")
+  );
 
   // Update
   const handleSelectToEdit = (bookRecord) => {
@@ -141,7 +148,7 @@ function BookScreen(props) {
       <Spin spinning={loading}>
         <div style={{ width: '100%'}}>
           <BookList 
-            data={bookData} 
+            data={filteredBooks}
             onLiked={handleLikeBook}
             onEdited={handleSelectToEdit}
             onDeleted={handleDeleteBook}

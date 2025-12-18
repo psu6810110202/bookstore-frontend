@@ -1,8 +1,10 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'; 
-import { Button, Dropdown } from 'antd'; 
+import { Button, Dropdown, Input } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 
-function NavBar({ isAuthenticated, onLogout, showAddBookModal }) {
+const { Search } = Input;
+
+function NavBar({ isAuthenticated, onLogout, showAddBookModal, onSearch }) {
     const navigate = useNavigate();
     const location = useLocation(); 
 
@@ -43,17 +45,31 @@ function NavBar({ isAuthenticated, onLogout, showAddBookModal }) {
     // --- ส่วนการตั้งค่ารายการในเมนู Dropdown ---
     const items = [
         {
+            key: '0',
+            label: (
+                <Search 
+                    placeholder="Search books..." 
+                    allowClear
+                    onSearch={onSearch} // ค้นหาเมื่อกด Enter
+                    onChange={(e) => onSearch(e.target.value)} // ค้นหาแบบ Real-time
+                    style={{ width: 180, padding: '4px 0' }}
+                    onClick={(e) => e.stopPropagation()} // ป้องกันเมนูปิดเมื่อคลิกที่ช่องกรอก
+                />
+            ),
+        },
+        {
             key: '1',
             label: 'New Book',
-            onClick: (e) => {
-                showAddBookModal(); //
-            },
+            onClick: () => showAddBookModal(), //
         },
         {
             key: '2',
             label: 'Logout',
             danger: true,
-            onClick: handleLogoutClick,
+            onClick: () => {
+                onLogout();
+                navigate('/login');
+            }, //
         },
     ];
 
