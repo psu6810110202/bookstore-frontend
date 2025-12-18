@@ -168,14 +168,6 @@ const handleBookAdded = async (values, form) => {
                 </ProtectedRoute>
               } 
             />
-
-            <Route 
-              path="/book/edit/:id" element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
-                  <EditBook />
-                </ProtectedRoute>
-              } 
-            />
             
             <Route 
               path="*" 

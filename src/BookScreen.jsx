@@ -80,26 +80,40 @@ function BookScreen(props) {
   const handleSelectToEdit = (bookRecord) => {
     setSelectedBook(bookRecord); 
   }
-  const updateBook = async (updatedData) => {
-    const bookId = selectedBook.id; 
 
-    const { 
-        id, 
-        category, 
-        createdAt, 
-        updatedAt, 
-        likeCount, 
-        ...dataToSend 
+  const updateBook = async (updatedData) => {
+    const bookId = selectedBook.id;
+
+    const {
+      id,
+      category,
+      createdAt,
+      updatedAt,
+      likeCount,
+      coverUrl,
+      ...dataToSend
     } = updatedData;
 
+    const payload = {
+      ...dataToSend,
+      price: Number(dataToSend.price),
+      stock: Number(dataToSend.stock),
+      categoryId: Number(dataToSend.categoryId),
+    };
+
     setLoading(true);
-      try{
-        await axios.patch(`${URL_BOOK}/${bookId}`, dataToSend);
-        handleCloseEditModal(); 
-        fetchBooks();
-      } catch(err) {  console.log(err)} 
-      finally {setLoading(false);}
-  }
+    try {
+      console.log("Sending PATCH payload:", payload);
+      
+      await axios.patch(`${URL_BOOK}/${bookId}`, payload);
+      handleCloseEditModal();
+      fetchBooks();
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+    } finally {
+      setLoading(false);
+    }
+  };  
 
   // Close Modal
   const handleCloseEditModal = () => {
@@ -134,23 +148,13 @@ function BookScreen(props) {
           />
         </div>
       </Spin>
-      <Modal
-        open={!!selectedBook}
+      <EditBook
+        isOpen={!!selectedBook}
+        item={selectedBook} 
+        categories={categories}
+        onBookUpdated={updateBook}
         onCancel={handleCloseEditModal}
-        footer={null} 
-        destroyOnClose={true} 
-        width={700}
-      >
-        {selectedBook && (
-          <EditBook
-            isOpen={!!selectedBook}
-            item={selectedBook} 
-            categories={categories}
-            onBookUpdated={updateBook}
-            onCancel={handleCloseEditModal}
-          />
-        )}
-      </Modal>
+      />
     </>
   )
 }

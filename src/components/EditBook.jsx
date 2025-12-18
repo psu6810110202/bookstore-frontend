@@ -1,11 +1,10 @@
-import { Button, Form, Select, Input, InputNumber, Image, Modal } from 'antd';
+import { Form, Select, Input, InputNumber, Image, Modal } from 'antd';
 import React, { useEffect } from 'react';
 
 const { useForm } = Form;
 
 export default function EditBook(props) {
-
-    const [form] = useForm();
+    const [form] = useForm(); // สร้าง form instance
     const { isOpen, item, categories, onBookUpdated, onCancel } = props;
 
     const currentCoverUrl = item?.coverUrl; 
@@ -13,54 +12,58 @@ export default function EditBook(props) {
 
     useEffect(() => {
         if (isOpen && item) { 
-            form.setFieldsValue(item);
-        } 
-        else if (!isOpen) {
-            form.resetFields();
+            form.setFieldsValue(item); 
         }
     }, [isOpen, item, form]);
 
-    const onFinish = (values) => {
-        props.onBookUpdated(values);
+    const handleOk = () => {
+        form.validateFields()
+            .then((values) => {
+                onBookUpdated({ ...item, ...values });
+            })
+            .catch((info) => {
+                console.log('Validate Failed:', info);
+            });
     };
 
-    return(
-        <Form layout="vertical" onFinish={onFinish}>
-            <h2>Edit Book</h2>
+    return (
+        <Modal
+            title="Edit Book"
+            open={isOpen} // ใช้สถานะการเปิดจาก props
+            onCancel={onCancel}
+            onOk={handleOk} // เมื่อกด Save ให้เรียก handleOk
+            okText="Save"
+            cancelText="Cancel"
+            destroyOnHidden
+        >
+            <Form 
+                form={form}
+                layout="vertical"
+            >
+                <Form.Item style={{ textAlign: 'center' }}> 
+                    <Image src={fullImageUrl} height={100} alt="Current Book Cover" fallback="https://via.placeholder.com/100?text=No+Image" />
+                </Form.Item>
 
-            <Form.Item> 
-                <Image src={fullImageUrl} height={100} alt="Current Book Cover"/>
-            </Form.Item>
-
-            <Form.Item name="title" label="Title" rules={[{ required: true }]}>
-                <Input/>
-            </Form.Item>
-            
-            <Form.Item name="author" label="Author" rules={[{ required: true }]}>
-                <Input />
-            </Form.Item>
-            
-            <Form.Item name="price" label="Price" rules={[{ required: true }]}>
-                <InputNumber/>
-            </Form.Item>
-            
-            <Form.Item name="stock" label="Stock" rules={[{ required: true }]}>
-                <InputNumber/>
-            </Form.Item>
-            
-            <Form.Item name="categoryId" label="Category" rules={[{required: true}]}>
-                <Select allowClear style={{width:"150px"}} options={categories}/>
-            </Form.Item>
-            
-            <Form.Item
-                wrapperCol={{ 
-                    span: 24, 
-                    style: { textAlign: 'right' }
-                }} style={{ marginBottom: 0 }}>
-
-                <Button type="default" onClick={onCancel} style={{marginRight: 8}}>Cancel</Button>
-                <Button type="primary" htmlType="submit">save</Button>
-            </Form.Item>
-        </Form>
-    )
+                <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Please enter title' }]}>
+                    <Input />
+                </Form.Item>
+                
+                <Form.Item name="author" label="Author" rules={[{ required: true, message: 'Please enter author' }]}>
+                    <Input />
+                </Form.Item>
+                
+                <Form.Item name="price" label="Price" rules={[{ required: true, message: 'Please enter price' }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                </Form.Item>
+                
+                <Form.Item name="stock" label="Stock" rules={[{ required: true, message: 'Please enter stock' }]}>
+                    <InputNumber min={0} style={{ width: '100%' }} />
+                </Form.Item>
+                
+                <Form.Item name="categoryId" label="Category" rules={[{ required: true, message: 'Please select category' }]}>
+                    <Select allowClear options={categories} />
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
 }
