@@ -20,11 +20,13 @@ function App() {
   const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
   const [isAuthenticated, setIsAuthenticated] = useState(!!savedToken);
 
-  useEffect(() => {
-    if (savedToken) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${savedToken}`;
+  axios.interceptors.request.use((config) => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
     }
-  }, [savedToken]);
+    return config;
+  });
 
   console.log("App Render: isAuthenticated =", isAuthenticated); 
 
