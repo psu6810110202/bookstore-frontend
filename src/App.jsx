@@ -16,17 +16,17 @@ if (import.meta.env.DEV){
 
 const { Search } = Input;
 
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 function App() {
   const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
   const [isAuthenticated, setIsAuthenticated] = useState(!!savedToken);
-
-  axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  });
 
   console.log("App Render: isAuthenticated =", isAuthenticated); 
 

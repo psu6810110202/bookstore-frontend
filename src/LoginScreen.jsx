@@ -35,6 +35,8 @@ export default function LoginScreen(props) {
       setErrMsg(null)
 
       const response = await axios.post(URL_AUTH, { username, password })
+      const token = response.data.access_token;
+
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
       props.onLoginSuccess(token);
@@ -67,7 +69,7 @@ export default function LoginScreen(props) {
 
       {errMsg &&
         <Form.Item>
-          <Alert message={errMsg} type="error" />
+          <Alert title={errMsg} type="error" />
         </Form.Item>
       }
 

@@ -12,12 +12,7 @@ export default function AddBook({ isVisible, onClose, onBookAdded, isLoading }) 
 
   const fetchCategories = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const response = await axios.get(URL_CATEGORY, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      const response = await axios.get(URL_CATEGORY);
       
       setCategories(response.data.map(cat => ({
         label: cat.name,
