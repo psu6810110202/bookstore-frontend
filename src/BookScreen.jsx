@@ -85,7 +85,15 @@ function BookScreen(props) {
 
   // Update
   const handleSelectToEdit = (bookRecord) => {
-    setSelectedBook(bookRecord); 
+    // สร้างตัวแปรใหม่ โดยแปลงค่า Price และ Stock ให้เป็นตัวเลข (Number) ทันที
+    const bookWithNumberValues = {
+      ...bookRecord,
+      price: Number(bookRecord.price),       // แปลง "12" -> 12
+      stock: Number(bookRecord.stock),       // แปลง "50" -> 50
+      categoryId: Number(bookRecord.categoryId) // แปลง ID เป็นตัวเลขด้วย
+    };
+
+    setSelectedBook(bookWithNumberValues); 
   }
 
   const updateBook = async (updatedData) => {

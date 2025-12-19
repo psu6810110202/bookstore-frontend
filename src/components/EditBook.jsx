@@ -52,13 +52,31 @@ export default function EditBook(props) {
                     <Input />
                 </Form.Item>
                 
-                <Form.Item name="price" label="Price" rules={[{ required: true, message: 'Please enter price' }]}>
-                    <InputNumber min={0} style={{ width: '100%' }} />
-                </Form.Item>
-                
-                <Form.Item name="stock" label="Stock" rules={[{ required: true, message: 'Please enter stock' }]}>
-                    <InputNumber min={0} style={{ width: '100%' }} />
-                </Form.Item>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                    <Form.Item 
+                        name="price" 
+                        label="Price" 
+                        style={{ flex: 1 }}
+                        rules={[
+                            { required: true, message: 'Please input the price!' },
+                            { type: 'number', min: 0, message: 'Price >= 0' },
+                        ]}
+                    >
+                        <InputNumber style={{ width: '100%' }} prefix="$"/>
+                    </Form.Item>
+                    
+                    <Form.Item 
+                        name="stock" 
+                        label="Stock" 
+                        style={{ flex: 1 }}
+                        rules={[
+                            { required: true, message: 'Please input the stock quantity!' },
+                            { type: 'number', min: 0, message: 'Stock >= 0' }
+                        ]}
+                    >
+                        <InputNumber style={{ width: '100%' }}/>
+                    </Form.Item>
+                </div>
                 
                 <Form.Item name="categoryId" label="Category" rules={[{ required: true, message: 'Please select category' }]}>
                     <Select allowClear options={categories} />
