@@ -38,6 +38,9 @@ function NavBar({ isAuthenticated, onLogout, showAddBookModal, onOpenSearch, onS
         justifyContent: 'center', 
         position: 'static', 
         zIndex: 'initial',  
+        borderRadius: '16px',       // ** ขอบมน **
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)', // ** ใส่เงา (Shadow) **
+        marginBottom: '30px'
     };
 
     const currentStyle = isAuthenticated ? loggedInStyle : notLoggedInStyle;
@@ -95,7 +98,11 @@ function NavBar({ isAuthenticated, onLogout, showAddBookModal, onOpenSearch, onS
 
     // เมื่อยังไม่ Login (หน้า Login): [ 📚 Book List 📚 ]
     const LoggedOutView = (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '15px' 
+        }}>
             <span style={{ fontSize: '28px' }}>📚</span>
             <Link to="/" style={{ color: '#332200', textDecoration: 'none', fontSize: '25px', fontWeight: 'bold' }}>
                 Book List
