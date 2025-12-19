@@ -109,7 +109,7 @@ export default function AddBook({ isVisible, onClose, onBookAdded, isLoading }) 
                 type: 'number', 
                 min: 1, 
                 message: 'Price must be a positive number (>= 1)' 
-              }
+              },
             ]}
           >
             <InputNumber style={{ width: '100%' }}/>

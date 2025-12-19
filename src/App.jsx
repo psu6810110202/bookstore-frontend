@@ -63,6 +63,16 @@ function App() {
   const showAddBookModal = () => setIsAddBookModalVisible(true);
   const handleAddBookModalClose = () => setIsAddBookModalVisible(false);
 
+  // 1. เพิ่มฟังก์ชันช่วยแปลงไฟล์ภาพเป็น String (Base64)
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // อ่านไฟล์เป็น Data URL
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const handleBookAdded = async (values, form) => {
       setIsSubmitting(true);
       try {
@@ -84,12 +94,6 @@ function App() {
           const priceValue = Number(values.price);
           const stockValue = Number(values.stock);
           const categoryIdValue = Number(values.categoryId); // Ensure categoryId is a number
-
-          if (priceValue <= 0) {
-              message.error("Price must be a positive number.");
-              setIsSubmitting(false);
-              return;
-          }
           
           // Check if important fields might have failed conversion (resulting in NaN)
           if (isNaN(priceValue) || isNaN(stockValue) || isNaN(categoryIdValue)) {
@@ -115,12 +119,13 @@ function App() {
           };
 
           // Append the book details as a stringified JSON object
-          formData.append('data', JSON.stringify(bookData));
+          formData.append('data', bookData);
 
           // --- 4. API Call ---
-          const response = await axios.post("api/book", formData, {
+          const response = await axios.post("api/book", bookData, {
               headers: {
                   'Authorization': `Bearer ${token}`,
+                  "Content-Type": "application/json",
               }
           });
 
