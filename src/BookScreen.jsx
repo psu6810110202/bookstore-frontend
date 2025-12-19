@@ -12,7 +12,7 @@ const URL_CATEGORY = "/api/book-category"
 
 function BookScreen(props) {
 
-  const { searchKeyword } = props;
+  const { searchKeyword, refreshTrigger } = props;
 
   // State หลัก
   const [totalAmount, setTotalAmount] = useState(0);
@@ -128,9 +128,9 @@ function BookScreen(props) {
   }
 
   useEffect(() => {
-    fetchCategories()
-    fetchBooks()
-  }, [])
+    fetchCategories();
+    fetchBooks();
+  }, [refreshTrigger]);
 
 
   useEffect(() => {

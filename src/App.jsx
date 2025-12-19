@@ -28,6 +28,8 @@ function App() {
   const savedToken = localStorage.getItem(AUTH_TOKEN_KEY);
   const [isAuthenticated, setIsAuthenticated] = useState(!!savedToken);
 
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   console.log("App Render: isAuthenticated =", isAuthenticated); 
 
     // 💡 2. ดูสถานะหลังจาก Login
@@ -105,14 +107,14 @@ function App() {
           // --- 3. Prepare FormData Payload ---
           const formData = new FormData();
           const file = values.image[0].originFileObj;
-
-          // Append the image file
           formData.append('coverImage', file, file.name);
 
           // Prepare book details object with validated/converted numbers
           const bookData = {
               title: values.title,
               author: values.author,
+              description: values.description || "",
+              isbn: values.isbn,
               price: priceValue,       // Use the cleaned number value
               stock: stockValue,       // Use the cleaned number value
               categoryId: categoryIdValue, // Use the cleaned number value
@@ -135,6 +137,8 @@ function App() {
           form.resetFields();
           handleAddBookModalClose();
           message.success('Book added successfully!');
+
+          setRefreshTrigger(prev => prev + 1);
 
       } catch (err) {
           // --- 6. Improved Error Handling ---
@@ -199,7 +203,11 @@ function App() {
             path="/" 
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated}>
-                <BookScreen onLogout={handleLogout} searchKeyword={searchKeyword} /> 
+                <BookScreen 
+                  onLogout={handleLogout} 
+                  searchKeyword={searchKeyword} 
+                  refreshTrigger={refreshTrigger} 
+                /> 
               </ProtectedRoute>
             } 
           />
