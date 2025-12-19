@@ -37,7 +37,6 @@ export default function LoginScreen(props) {
       const response = await axios.post(URL_AUTH, { username, password })
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-      axios.defaults.headers.common = { 'Authorization': `bearer ${token}` }
       props.onLoginSuccess(token);
 
       if (remember) {
