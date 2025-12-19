@@ -10,6 +10,11 @@ export default function AddBook({ isVisible, onClose, onBookAdded, isLoading }) 
   const [form] = Form.useForm();
   const [categories, setCategories] = useState([]);
 
+  const generateISBN = () => {
+    const randomDigits = Math.floor(Math.random() * 10000000000).toString().padStart(10, '0');
+    return `978-${randomDigits}`;
+  };
+
   const fetchCategories = async () => {
     try {
       const response = await axios.get(URL_CATEGORY);
@@ -25,8 +30,13 @@ export default function AddBook({ isVisible, onClose, onBookAdded, isLoading }) 
   }
 
   useEffect(() => {
-    fetchCategories()
-  }, [isVisible])
+    if (isVisible) {
+      fetchCategories();
+      form.setFieldsValue({
+        isbn: generateISBN()
+      });
+    }
+  }, [isVisible, form])
 
   const onFinish = (values) => {
     onBookAdded(values, form)
@@ -48,6 +58,14 @@ export default function AddBook({ isVisible, onClose, onBookAdded, isLoading }) 
         form={form}
         layout="vertical"
         onFinish={onFinish}>
+
+        <Form.Item 
+          name="isbn" 
+          label="ISBN (Auto-generated)" 
+          tooltip="เลขนี้ถูกสุ่มขึ้นโดยระบบ"
+        >
+          <Input disabled style={{ color: '#000', fontWeight: 'bold' }} />
+        </Form.Item>
 
         <Form.Item 
           name="image" 
@@ -96,6 +114,10 @@ export default function AddBook({ isVisible, onClose, onBookAdded, isLoading }) 
           
           <Form.Item name="author" label="Author" rules={[{ required: true }]}>
             <Input />
+          </Form.Item>
+
+          <Form.Item name="description" label="Description">
+            <Input.TextArea rows={4} placeholder="Enter book description or summary..." />
           </Form.Item>
           
           <Form.Item 
